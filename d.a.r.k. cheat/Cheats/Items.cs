@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
@@ -61,7 +61,7 @@ namespace dark_cheat
                 {
                     // Fallback: if no PhotonView is found, set the field directly.
                     var itemType = selectedItem.ItemObject.GetType();
-                    var valueField = itemType.GetField("dollarValueCurrent", BindingFlags.Public | BindingFlags.Instance);
+                    FieldInfo valueField = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
                     if (valueField == null)
                     {
                         Debug.Log($"Error: Could not find 'dollarValueCurrent' field in {selectedItem.Name}");
@@ -147,12 +147,14 @@ namespace dark_cheat
                 // Only check dollarValueCurrent if it's NOT PlayerDeathHead
                 if (valuableObject.GetType().Name != "PlayerDeathHead")
                 {
-                    var valueField = valuableObject.GetType().GetField("dollarValueCurrent", BindingFlags.Public | BindingFlags.Instance);
+                    FieldInfo valueField = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
                     if (valueField != null)
                     {
                         try
                         {
-                            itemValue = Convert.ToInt32(valueField.GetValue(valuableObject));
+                            itemValue = Mathf.RoundToInt((float)valueField.GetValue(valuableObject));
+                            DLog.LogWarning($"Item: {itemName}");
+                            DLog.LogWarning($"Item Value: {itemValue}\n");
                         }
                         catch (Exception e)
                         {
@@ -177,7 +179,7 @@ namespace dark_cheat
 
             return itemList;
         }
-        
+
         public static void TeleportItemToMe(GameItem selectedItem)
         {
             if (selectedItem == null || selectedItem.ItemObject == null)
