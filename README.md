@@ -20,7 +20,7 @@
 - Noclip
 - Infinite Health
 - Infinite Stamina
-- Unlimited Stamina (NEW!)
+- Unlimited Stamina (NEW!) Thank You [Hiradpi](https://github.com/Hiradpi) For Idea
 - Grab Guard
 - RGB Player
 - **No Weapon Recoil (Host only)**
