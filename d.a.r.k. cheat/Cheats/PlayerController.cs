@@ -147,6 +147,41 @@ namespace dark_cheat
             }
         }
 
+        public static void UnlimitedStamina()
+        {
+            var playerControllerType = Type.GetType("PlayerController, Assembly-CSharp");
+            if (playerControllerType != null)
+            {
+                var playerControllerInstance = GameHelper.FindObjectOfType(playerControllerType);
+
+                if (playerControllerInstance != null)
+                {
+                    Debug.Log($"setting the stamina drain to 0f");
+                    var energySprintDrainField = playerControllerType.GetField("EnergySprintDrain", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
+                    if (energySprintDrainField != null)
+                    {
+                        if (Hax2.unl_stamineState)
+                        {
+                            energySprintDrainField.SetValue(playerControllerInstance, 0f);
+                        }
+                        else if (!Hax2.unl_stamineState)
+                        {
+                            energySprintDrainField.SetValue(playerControllerInstance, 10f);
+                        }
+                    }
+
+                }
+                else
+                {
+                    DLog.Log("playerControllerInstance not found.");
+                }
+            }
+            else
+            {
+                DLog.Log("PlayerController type not found.");
+            }
+        }
+
         public static void DecreaseStaminaRechargeDelay(float delayMultiplier, float rateMultiplier = 1f)
         {
             if (PlayerReflectionCache.PlayerControllerInstance == null) // Ensure the PlayerController instance is cached.
@@ -569,9 +604,10 @@ namespace dark_cheat
             float finalMaxStamina = Mathf.Max(cheatMaxStamina, currentMaxStamina); // Use the higher value.
             SetMaxStamina(finalMaxStamina); // Apply the new max stamina.
 
-            SetSprintSpeed(5);   
-            Strength.MaxStrength();      
-            MaxStamina();        
+            SetSprintSpeed(5);
+            Strength.MaxStrength();
+            MaxStamina();
+            UnlimitedStamina();
             ReapplyStaminaSettings();
             SetThrowStrength(Hax2.throwStrength);
             SetGrabRange(5);

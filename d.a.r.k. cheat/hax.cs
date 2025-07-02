@@ -73,6 +73,7 @@ namespace dark_cheat
         public static bool debounce = false;
         public static bool infiniteHealthActive = false;
         public static bool stamineState = false;
+        public static bool unl_stamineState = false;
         public static bool unlimitedBatteryActive = false;
         public static UnlimitedBattery unlimitedBatteryComponent;
         public static bool blindEnemies = false;
@@ -924,6 +925,9 @@ namespace dark_cheat
             GUILayout.Space(5);
 
             ToggleLogic("inf_stam", " Infinite Stamina", ref stamineState, PlayerController.MaxStamina);
+            GUILayout.Space(5);
+
+            ToggleLogic("unl_stam", " Unlimited Stamina", ref unl_stamineState, PlayerController.UnlimitedStamina);
             GUILayout.Space(10);
 
             GUILayout.Label("MISCELLANEOUS", sectionHeaderStyle);

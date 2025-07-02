@@ -106,6 +106,14 @@ namespace dark_cheat
                 DLog.Log("infinite stamina toggled: " + Hax2.stamineState);
             }, "toggles infinite stamina on/off"));
 
+            availableActions.Add(new HotkeyAction("Unlimited Stamina", () =>
+            {
+                bool newUnlimitedStaminaState = !Hax2.unl_stamineState;
+                Hax2.unl_stamineState = newUnlimitedStaminaState;
+                PlayerController.UnlimitedStamina();
+                DLog.Log("unlimited stamina toggled: " + Hax2.unl_stamineState);
+            }, "toggles unlimited stamina on/off"));
+
             availableActions.Add(new HotkeyAction("RGB Player", () =>
             {
                 playerColor.isRandomizing = !playerColor.isRandomizing;
