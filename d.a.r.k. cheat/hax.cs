@@ -549,7 +549,7 @@ namespace dark_cheat
                 {
                     DebugCheats.valuableObjects.Add(val);
 
-                    var valueField = val.GetType().GetField("dollarValueCurrent", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    var valueField = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
                     if (valueField != null)
                     {
                         object valueObj = valueField.GetValue(val);
@@ -1151,7 +1151,7 @@ namespace dark_cheat
             jumpForce = GUILayout.HorizontalSlider(jumpForce, 1f, 30f, GUILayout.Width(200));
             if (jumpForce != OldjumpForce)
             {
-                PlayerController.SetJumpForce(17+jumpForce);
+                PlayerController.SetJumpForce(17 + jumpForce);
                 OldjumpForce = jumpForce;
             }
 
@@ -1159,7 +1159,7 @@ namespace dark_cheat
             customGravity = GUILayout.HorizontalSlider(customGravity, 1f, 30f, GUILayout.Width(200));
             if (customGravity != OldcustomGravity)
             {
-                PlayerController.SetCustomGravity(30+customGravity);
+                PlayerController.SetCustomGravity(30 + customGravity);
                 OldcustomGravity = customGravity;
             }
 
@@ -2154,7 +2154,7 @@ namespace dark_cheat
             }
             GUILayout.Space(5);
 
-            if (GUILayout.Button("Crash Lobby", buttonStyle)) 
+            if (GUILayout.Button("Crash Lobby", buttonStyle))
             {
                 DLog.Log("Crashing Lobby!");
                 GameObject localPlayer = DebugCheats.GetLocalPlayer();
