@@ -1,7 +1,19 @@
 # beta-d.a.r.k.-cheat | [Discord](https://discord.gg/RAR8D26P4s) | [Launcher](https://github.com/hdunl/DarkInjector/releases/latest)
 <sub>*Made by [D4rkks](https://github.com/D4rkks) (and contributors) | **v1.3***</sub>
 
+<sub>*Forked by [iiNothh](https://github.com/iiNothh) (and contributors) | **v1.3***</sub>
+
 ## FUNCTIONS
+
+## NOT WORKING FOR NEW ITEMS (I Think So) BECAUSE I DON'T HAVE IDEA
+## Known Unworking Functions
+- All Upgrade Functions (Streng, Range etc.)
+- Infinite Health
+- No Weapon Recoil
+- No Weapon Cooldown
+- Stamina Recharge Delay (Not Rate)
+- Stamina Recharge Rate (Single Problem Sometimes Not Working. Solution: Toggle)
+- I Think So Player Death Head Not Finding (My Friends Mustn't Know I'm Cheating So I Can't Fix It)
 
 ### Self
 - God Mode
