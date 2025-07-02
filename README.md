@@ -20,6 +20,7 @@
 - Noclip
 - Infinite Health
 - Infinite Stamina
+- Unlimited Stamina (NEW!)
 - Grab Guard
 - RGB Player
 - **No Weapon Recoil (Host only)**
