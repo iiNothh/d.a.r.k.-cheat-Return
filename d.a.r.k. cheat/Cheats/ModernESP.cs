@@ -1,4 +1,4 @@
-﻿using Steamworks.Ugc;
+using Steamworks.Ugc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,15 +91,23 @@ namespace dark_cheat
             float dist = Vector3.Distance(cam.transform.position, item.transform.position);
             float size = Mathf.Clamp((0.2f + dist) - 1, 0.2f, itemTextSize);
 
-            bool inPriceRange = item.dollarValueCurrent >= sortFromPrice &&
-                                item.dollarValueCurrent <= sortToPrice;
+            FieldInfo field = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
 
-            label.fontSize = size;
-            label.color = new Color(1f, 1f, 1f, 1f);
-            label.text = sortByPrice && !inPriceRange ? "" : GetItemInfo(item);
+            if (field != null)
+            {
+                bool inPriceRange = Mathf.RoundToInt((float)field.GetValue(item)) >= sortFromPrice &&
+                                    Mathf.RoundToInt((float)field.GetValue(item)) <= sortToPrice;
+                label.fontSize = size;
+                label.color = new Color(1f, 1f, 1f, 1f);
+                label.text = sortByPrice && !inPriceRange ? "" : GetItemInfo(item);
 
-            if (cam != null)
-                label.transform.rotation = Quaternion.LookRotation(cam.transform.forward);
+                if (cam != null)
+                    label.transform.rotation = Quaternion.LookRotation(cam.transform.forward);
+            }
+            else
+            {
+                DLog.Log("field is Null");
+            }
         }
 
         private static string GetItemInfo(ValuableObject item)
@@ -107,8 +115,10 @@ namespace dark_cheat
             string name = item.name.Replace("Valuable", "").Replace("(Clone)", "").Trim();
             string info = "□";
 
+            FieldInfo field = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+
             if (DebugCheats.showItemNames) info += $"\n{name}";
-            if (DebugCheats.showItemValue) info += $"\n<b>{item.dollarValueCurrent}$</b>";
+            if (DebugCheats.showItemValue) info += $"\n<b>{Mathf.RoundToInt((float)field.GetValue(item))}$</b>";
 
             return info;
         }
