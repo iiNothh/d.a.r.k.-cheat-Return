@@ -26,7 +26,7 @@ namespace dark_cheat
         private static float lastUpdateTime = 0f;
         private const float updateInterval = 5f;
         private static GameObject localPlayer;
-        
+
         private static int lastPlayerDataCount = 0;
         private static int lastEnemyCount = 0;
         private static int lastItemCount = 0;
@@ -142,9 +142,10 @@ namespace dark_cheat
                     }
                 }
             }
-            
+
             // Only log if the count has changed
-            if (playerDataList.Count != lastPlayerDataCount) {
+            if (playerDataList.Count != lastPlayerDataCount)
+            {
                 DLog.Log($"Player data list updated: {playerDataList.Count} players.");
                 lastPlayerDataCount = playerDataList.Count;
             }
@@ -197,13 +198,13 @@ namespace dark_cheat
         private static void UpdateLists()
         {
             UpdateExtractionPointList();
-            
+
             if (extractionPointList.Count != lastExtractionPointCount)
             {
                 DLog.Log($"Extraction Points list updated: {extractionPointList.Count} points found.");
                 lastExtractionPointCount = extractionPointList.Count;
             }
-            
+
             enemyList.Clear();
             enemyHealthCache.Clear();
             var enemyDirectorType = Type.GetType("EnemyDirector, Assembly-CSharp");
@@ -257,10 +258,10 @@ namespace dark_cheat
             }
 
             lastUpdateTime = Time.time;
-            
+
             // Only log if any of the counts have changed
-            if (enemyList.Count != lastEnemyCount || 
-                valuableObjects.Count != lastItemCount || 
+            if (enemyList.Count != lastEnemyCount ||
+                valuableObjects.Count != lastItemCount ||
                 playerList.Count != lastPlayerCount)
             {
                 DLog.Log($"Lists updated: {enemyList.Count} enemies, {valuableObjects.Count} items, {playerList.Count} players.");
@@ -274,7 +275,7 @@ namespace dark_cheat
         {
             GameObject newLocalPlayer = GetLocalPlayer();
             string newPlayerName = newLocalPlayer != null ? newLocalPlayer.name : "null";
-            
+
             // Only log if the local player has changed
             if (newLocalPlayer != localPlayer || newPlayerName != lastLocalPlayerName)
             {
@@ -288,7 +289,7 @@ namespace dark_cheat
                 }
                 lastLocalPlayerName = newPlayerName;
             }
-            
+
             localPlayer = newLocalPlayer;
         }
 
@@ -350,19 +351,21 @@ namespace dark_cheat
                                 if (gameObjectProperty != null)
                                 {
                                     GameObject foundPlayer = gameObjectProperty.GetValue(player) as GameObject;
-                                    
+
                                     // Only log if the player name has changed
                                     string playerName = foundPlayer.name;
-                                    if (playerName != lastLocalPlayerName) {
+                                    if (playerName != lastLocalPlayerName)
+                                    {
                                         DLog.Log("Local player found via Photon: " + playerName);
                                         lastLocalPlayerName = playerName;
                                     }
                                     return foundPlayer;
                                 }
-                                
+
                                 // Only log if the player name has changed
                                 string playerViewName = photonView.gameObject.name;
-                                if (playerViewName != lastLocalPlayerName) {
+                                if (playerViewName != lastLocalPlayerName)
+                                {
                                     DLog.Log("Local player found via PhotonView: " + playerViewName);
                                     lastLocalPlayerName = playerViewName;
                                 }
@@ -1114,12 +1117,12 @@ namespace dark_cheat
                     if (!isPlayerDeathHead && DebugCheats.showItemValue)
                     {
                         int itemValue = 0;
-                        var valueField = valuableObject.GetType().GetField("dollarValueCurrent", BindingFlags.Public | BindingFlags.Instance);
+                        var valueField = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
                         if (valueField != null)
                         {
                             try
                             {
-                                itemValue = Convert.ToInt32(valueField.GetValue(valuableObject));
+                                itemValue = Mathf.RoundToInt((float)valueField.GetValue(valuableObject));
                                 if (itemValue < DebugCheats.minItemValue)
                                     continue;
                             }
@@ -1172,12 +1175,12 @@ namespace dark_cheat
                         int itemValue = 0;
                         if (!isPlayerDeathHead)
                         {
-                            var valueField = valuableObject.GetType().GetField("dollarValueCurrent", BindingFlags.Public | BindingFlags.Instance);
+                            var valueField = typeof(ValuableObject).GetField("dollarValueCurrent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
                             if (valueField != null)
                             {
                                 try
                                 {
-                                    itemValue = Convert.ToInt32(valueField.GetValue(valuableObject));
+                                    itemValue = Mathf.RoundToInt((float)valueField.GetValue(valuableObject));
                                 }
                                 catch (Exception e)
                                 {
