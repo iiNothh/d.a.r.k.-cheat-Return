@@ -7,12 +7,10 @@
 
 ## NOT WORKING FOR NEW ITEMS (I Think So) BECAUSE I DON'T HAVE IDEA
 ## Known Unworking Functions
-- All Upgrade Functions (Streng, Range etc.)
+- Speed
 - Infinite Health
 - No Weapon Recoil
 - No Weapon Cooldown
-- Stamina Recharge Delay (Not Rate)
-- Stamina Recharge Rate (Single Problem Sometimes Not Working. Solution: Toggle)
 - Always Max Stamina (Experimental)
 
 ### Self
