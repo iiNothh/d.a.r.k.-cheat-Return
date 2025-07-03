@@ -13,7 +13,7 @@
 - No Weapon Cooldown
 - Stamina Recharge Delay (Not Rate)
 - Stamina Recharge Rate (Single Problem Sometimes Not Working. Solution: Toggle)
-- I Think So Player Death Head Not Finding (My Friends Mustn't Know I'm Cheating So I Can't Fix It)
+- Always Max Stamina (Experimental)
 
 ### Self
 - God Mode
@@ -31,6 +31,8 @@
   - Speed
   - Grab Range
   - Stamina Recharge Delay/Rate
+  - Unlimited Sprint Stamina
+  - Always Max Stamina (Experimental)
   - Extra Jumps
   - Tumble Launch
   - Jump Force
