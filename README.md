@@ -8,7 +8,6 @@
 ## NOT WORKING FOR NEW ITEMS (I Think So) BECAUSE I DON'T HAVE IDEA
 ## Known Unworking Functions
 - Speed
-- Infinite Health
 - No Weapon Recoil
 - No Weapon Cooldown
 - Always Max Stamina (Experimental)
