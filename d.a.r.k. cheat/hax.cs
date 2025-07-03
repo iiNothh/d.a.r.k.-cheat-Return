@@ -7,7 +7,6 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
 using SingularityGroup.HotReload;
-using SingularityGroup.HotReload;
 using System.Runtime.CompilerServices;
 using dark_cheat.Utils;
 using static UnityEngine.Rendering.DebugUI.Table;
@@ -22,6 +21,7 @@ namespace dark_cheat
 
     public class Hax2 : MonoBehaviour
     {
+        private static Type statsControllerType = Type.GetType("StatsManager, Assembly-CSharp");
         private static List<EnemySetup> cachedFilteredEnemySetups = null;
         private static List<string> cachedEnemySetupNames = null;
         public string spawnCountText = "1";  // Default value for number of enemies to spawn.
@@ -1020,7 +1020,7 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    punManagerView.RPC("UpgradePlayerGrabStrengthRPC", RpcTarget.AllBuffered, steamID, newStrength);
+                    setUpgrade(steamID, "Grab Strength", "grabStrength", newStrength, "playerUpgradeStrength");
                 }
                 else
                 {
@@ -1043,7 +1043,7 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    punManagerView.RPC("UpgradePlayerThrowStrengthRPC", RpcTarget.AllBuffered, steamID, newThrowStrength);
+                    setUpgrade(steamID, "Throw Strength", "throwStrength", newThrowStrength, "playerUpgradeThrow");
                 }
                 else
                 {
@@ -1065,7 +1065,7 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    punManagerView.RPC("UpgradePlayerSprintSpeedRPC", RpcTarget.AllBuffered, steamID, newSpeed);
+                    //setUpgrade(steamID, "Sprint Speed", "throwStrength", throwStrength);
                 }
                 else
                 {
@@ -1087,7 +1087,7 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    punManagerView.RPC("UpgradePlayerGrabRangeRPC", RpcTarget.AllBuffered, steamID, newGrabRange);
+                    setUpgrade(steamID, "Grab Range", "grabRange", newGrabRange, "playerUpgradeRange");
                 }
                 else
                 {
@@ -1097,13 +1097,13 @@ namespace dark_cheat
                 OldgrabRange = grabRange;
             }
 
-            GUILayout.Label("Stamina Recharge Delay: " + Mathf.RoundToInt(staminaRechargeDelay), labelStyle);
-            staminaRechargeDelay = GUILayout.HorizontalSlider(staminaRechargeDelay, 1f, 30f, GUILayout.Width(200));
-            if (staminaRechargeDelay != oldStaminaRechargeDelay)
-            {
-                oldStaminaRechargeDelay = staminaRechargeDelay;
-                Debug.Log("Stamina Recharge Delay to: " + staminaRechargeDelay);
-            }
+            //GUILayout.Label("Stamina Recharge Delay: " + Mathf.RoundToInt(staminaRechargeDelay), labelStyle);
+            //staminaRechargeDelay = GUILayout.HorizontalSlider(staminaRechargeDelay, 1f, 30f, GUILayout.Width(200));
+            //if (staminaRechargeDelay != oldStaminaRechargeDelay)
+            //{
+            //    oldStaminaRechargeDelay = staminaRechargeDelay;
+            //    Debug.Log("Stamina Recharge Delay to: " + staminaRechargeDelay);
+            //}
 
             GUILayout.Label("Stamina Recharge Rate: " + Mathf.RoundToInt(staminaRechargeRate), labelStyle);
             staminaRechargeRate = GUILayout.HorizontalSlider(staminaRechargeRate, 1f, 30f, GUILayout.Width(200));
@@ -1127,7 +1127,19 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    punManagerView.RPC("UpgradePlayerExtraJumpRPC", RpcTarget.AllBuffered, steamID, newExtraJumps);
+                    var playerControllerInstance = GameHelper.FindObjectOfType(PlayerController.playerControllerType);
+                    FieldInfo jumpExtraField = PlayerController.playerControllerType.GetField("JumpExtra", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (playerControllerInstance != null && jumpExtraField != null)
+                    {
+                        jumpExtraField.SetValue(playerControllerInstance, newExtraJumps);
+                        setDictionaryStat(steamID, "Extra Jump", newExtraJumps, "playerUpgradeExtraJump");
+                    }
+                    else
+                    {
+                        DLog.LogWarning(playerControllerInstance == null ? "playerControllerInstance" : "jumpExtraField" + " Is null");
+                    }
+
                 }
                 else
                 {
@@ -1149,7 +1161,28 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    punManagerView.RPC("UpgradePlayerTumbleLaunchRPC", RpcTarget.AllBuffered, steamID, newtumbleLaunch);
+                    var avatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
+                    object tumbleInstance = avatar?.tumble;
+
+                    if (tumbleInstance != null)
+                    {
+                        Type tumbleType = tumbleInstance.GetType();
+                        FieldInfo tumbleLaunchField = tumbleType.GetField("tumbleLaunch", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                        
+                        if (tumbleLaunchField != null)
+                        {
+                            tumbleLaunchField.SetValue(tumbleInstance, newtumbleLaunch);
+                        }
+                        else
+                        {
+                            DLog.LogWarning("tumbleLaunchField Is Null");
+                        }
+                    }
+                    else
+                    {
+                        DLog.LogWarning("tumbleInstance Is Null");
+                    }
+                    
                 }
                 else
                 {
@@ -2834,6 +2867,85 @@ namespace dark_cheat
             }
         }
 
+        private void setUpgrade(string steamID, string upgradeName, string physGrabberUpgradeName, int newValue, string upgradeUpgradeName)
+        {
+            FieldInfo playerUpgradeFieldInfo = typeof(StatsManager).GetField(upgradeUpgradeName, BindingFlags.Public | BindingFlags.Instance);
+            if (playerUpgradeFieldInfo != null)
+            {
+                var statsControllerInstance = GameHelper.FindObjectOfType(statsControllerType);
+                if (statsControllerInstance != null)
+                {
+                    var dict = (Dictionary<string, int>)playerUpgradeFieldInfo.GetValue(statsControllerInstance);
+                    if (!string.IsNullOrEmpty(steamID))
+                    {
+                        if (dict.ContainsKey(steamID))
+                        {
+                            PlayerAvatar playerAvatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
+                            if (playerAvatar != null)
+                            {
+                                Type grabberType = playerAvatar.physGrabber.GetType();
+                                FieldInfo field = grabberType.GetField(physGrabberUpgradeName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+                                if (field != null)
+                                {
+                                    dict[steamID] = newValue;
+                                    field.SetValue(playerAvatar.physGrabber, newValue);
+                                    DLog.LogWarning($"{upgradeName} Updated To {newValue}");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            PlayerAvatar playerAvatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
+                            if (playerAvatar != null)
+                            {
+                                playerAvatar.physGrabber.grabStrength = newValue;
+                                dict.Add(steamID, newValue);
+                                DLog.LogWarning($"{upgradeName} Updated To {newValue} With Add steamID");
+                            }
+                        }
+                    }
+                }
+                //punManagerView.RPC("UpgradePlayerGrabStrengthRPC", RpcTarget.AllBuffered, steamID, newStrength);
+            }
+            else
+            {
+                DLog.LogWarning($"{upgradeName} playerUpgradeFieldInfo is Null");
+            }
+        }
+        private void setDictionaryStat(string steamID, string upgradeName, int newValue, string upgradeUpgradeName)
+        {
+            FieldInfo playerUpgradeFieldInfo = typeof(StatsManager).GetField(upgradeUpgradeName, BindingFlags.Public | BindingFlags.Instance);
+            if (playerUpgradeFieldInfo != null)
+            {
+                var statsControllerInstance = GameHelper.FindObjectOfType(statsControllerType);
+                if (statsControllerInstance != null)
+                {
+                    var dict = (Dictionary<string, int>)playerUpgradeFieldInfo.GetValue(statsControllerInstance);
+                    if (!string.IsNullOrEmpty(steamID))
+                    {
+                        if (dict.ContainsKey(steamID))
+                        {
+                            dict[steamID] = newValue;
+                            DLog.LogWarning($"{upgradeName} Updated To {newValue} Stats");
+                        }
+                        else
+                        {
+                            PlayerAvatar playerAvatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
+                            if (playerAvatar != null)
+                            {
+                                dict.Add(steamID, newValue);
+                                DLog.LogWarning($"{upgradeName} Updated To {newValue} Stats With Add steamID");
+                            }
+                        }
+                    }
+                }
+                //punManagerView.RPC("UpgradePlayerGrabStrengthRPC", RpcTarget.AllBuffered, steamID, newStrength);
+            }
+            else
+            {
+                DLog.LogWarning($"{upgradeName} playerUpgradeFieldInfo is Null");
+            }
+        }
         private void TrySpawnEnemy()
         {
             LevelGenerator levelGenerator = UnityEngine.Object.FindObjectOfType<LevelGenerator>();
