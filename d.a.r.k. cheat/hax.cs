@@ -459,6 +459,7 @@ namespace dark_cheat
                     PlayerController.MaxStamina();
                     PlayerController.UnlimitedSprintStamina();
                     PlayerController.Always_Max_Stamina();
+                    PlayerController.MaxHealth();
                 }
 
                 if (playerColor.isRandomizing)

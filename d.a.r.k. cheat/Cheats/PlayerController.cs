@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -105,18 +106,45 @@ namespace dark_cheat
                 DLog.Log("Unable to cache PlayerHealth instance.");
                 return;
             }
-
-            var updateHealthMethod = PlayerReflectionCache.PlayerHealthInstance.GetType() // Get the UpdateHealthRPC method from the cached playerHealth instance.
-                                        .GetMethod("UpdateHealthRPC", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (updateHealthMethod != null)
+            string steamID = PlayerController.GetLocalPlayerSteamID();
+            var playerAvatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
+            if (playerAvatar?.playerHealth != null)
             {
+                var playerHealth = playerAvatar.playerHealth;
+
+                FieldInfo healthField = playerHealth.GetType().GetField("health", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+                if (healthField != null)
+                {
                 if (Hax2.infiniteHealthActive)
                 {
-                    updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { 999999, 100, true });
+                    healthField.SetValue(playerHealth, 999999);
+                    //updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { 999999, 100, true });
                 }
                 else
                 {
-                    updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { 100, 100, true });
+                    var statsManagerType = typeof(StatsManager);
+                    var statsManagerInstance = GameHelper.FindObjectOfType(statsManagerType);
+
+                    FieldInfo playerUpgradeHealthField = typeof(StatsManager).GetField("playerUpgradeHealth", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                    if (playerUpgradeHealthField != null && statsManagerInstance != null)
+                    {
+                        var dict = (Dictionary<string, int>)playerUpgradeHealthField.GetValue(statsManagerInstance);
+
+                        if (dict.TryGetValue(steamID, out var upgradeLevel))
+                        {
+                            healthField.SetValue(playerHealth, (upgradeLevel * 20) + 100);
+                            DLog.Log($"Updated Health Value: {(upgradeLevel * 20) + 100}");
+                        }
+                    }
+                    else
+                    {
+                    DLog.LogWarning(playerUpgradeHealthField != null ? "playerUpgradeHealthField" : "Nothing" + "Is Null");
+                    DLog.LogWarning(statsManagerInstance != null ? "statsManagerInstance" : "Nothing" + "Is Null");
+                    }
+                }
+                    //updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { 100, 100, true });
                 }
                 DLog.Log("Current health set to " + (Hax2.infiniteHealthActive ? "999999" : "100") + " using cached reflection data.");
             }
