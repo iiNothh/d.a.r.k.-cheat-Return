@@ -6,6 +6,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Data.SqlTypes;
 
 namespace dark_cheat
 {
@@ -162,7 +163,17 @@ namespace dark_cheat
                     {
                         if (Hax2.unl_stamineState)
                         {
-                            energySprintDrainField.SetValue(playerControllerInstance, 0f);
+                            var sprintSpeed = PlayerReflectionCache.PlayerControllerType.GetField("SprintSpeed", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
+
+                            if (sprintSpeed != null)
+                            {
+                                object speed = sprintSpeed.GetValue(PlayerReflectionCache.PlayerControllerInstance);
+                                if (speed != null)
+                                {
+                                    float goingValue = -Convert.ToSingle(speed) + 5f;
+                                    energySprintDrainField.SetValue(playerControllerInstance, goingValue);
+                                }
+                            }
                         }
                         else if (!Hax2.unl_stamineState)
                         {
