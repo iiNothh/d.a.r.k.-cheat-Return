@@ -7,6 +7,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
 using SingularityGroup.HotReload;
+using SingularityGroup.HotReload;
 using System.Runtime.CompilerServices;
 using dark_cheat.Utils;
 using static UnityEngine.Rendering.DebugUI.Table;
@@ -73,7 +74,8 @@ namespace dark_cheat
         public static bool debounce = false;
         public static bool infiniteHealthActive = false;
         public static bool stamineState = false;
-        public static bool unl_stamineState = false;
+        public static bool unl_sprint_stamineState = false;
+        public static bool alw_max_stamState = false;
         public static bool unlimitedBatteryActive = false;
         public static UnlimitedBattery unlimitedBatteryComponent;
         public static bool blindEnemies = false;
@@ -100,7 +102,7 @@ namespace dark_cheat
         public static bool showPlayerStatus = true;
         private int totalValuableValue = 0;
 
-        public static string[] levelsToSearchItems = { "Level - Manor", "Level - Wizard", "Level - Arctic", "Level - Shop", "Level - Lobby", "Level - Recording" };
+        public static string[] levelsToSearchItems = { "Level - Manor", "Level - Wizard", "Level - Arctic", "Level - Shop", "Level - Lobby", "Level - Recording", "Level - Museum" };
 
         private GUIStyle menuStyle;
         private bool initialized = false;
@@ -454,6 +456,9 @@ namespace dark_cheat
                     UpdateItemList();
                     itemList = ItemTeleport.GetItemList();
                     nextUpdateTime = Time.time + updateInterval;
+                    PlayerController.MaxStamina();
+                    PlayerController.UnlimitedSprintStamina();
+                    PlayerController.Always_Max_Stamina();
                 }
 
                 if (playerColor.isRandomizing)
@@ -927,7 +932,10 @@ namespace dark_cheat
             ToggleLogic("inf_stam", " Infinite Stamina", ref stamineState, PlayerController.MaxStamina);
             GUILayout.Space(5);
 
-            ToggleLogic("unl_stam", " Unlimited Stamina", ref unl_stamineState, PlayerController.UnlimitedStamina);
+            ToggleLogic("unl_sprint_stam", " Unlimited Sprint Stamina", ref unl_sprint_stamineState, PlayerController.UnlimitedSprintStamina);
+            GUILayout.Space(5);
+
+            ToggleLogic("alw_max_stam", " Always Max Stamina", ref alw_max_stamState, PlayerController.Always_Max_Stamina);
             GUILayout.Space(10);
 
             GUILayout.Label("MISCELLANEOUS", sectionHeaderStyle);

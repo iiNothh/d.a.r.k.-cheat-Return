@@ -153,8 +153,8 @@ namespace dark_cheat
                         try
                         {
                             itemValue = Mathf.RoundToInt((float)valueField.GetValue(valuableObject));
-                            DLog.LogWarning($"Item: {itemName}");
-                            DLog.LogWarning($"Item Value: {itemValue}\n");
+                            //DLog.LogWarning($"Item: {itemName}");
+                            //DLog.LogWarning($"Item Value: {itemValue}\n");
                         }
                         catch (Exception e)
                         {

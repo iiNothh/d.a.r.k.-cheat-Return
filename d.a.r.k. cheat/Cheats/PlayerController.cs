@@ -1,12 +1,14 @@
-using System;
-using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
-using System.Threading;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
 using System.Data.SqlTypes;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace dark_cheat
 {
@@ -22,6 +24,7 @@ namespace dark_cheat
         private static float desiredDelayMultiplier = 1f;
         private static float desiredRateMultiplier = 1f;
 
+        private static CancellationTokenSource cts = new CancellationTokenSource();
         private static void InitializePlayerController()
         {
             if (playerControllerType == null)
@@ -148,9 +151,8 @@ namespace dark_cheat
             }
         }
 
-        public static void UnlimitedStamina()
+        public static void UnlimitedSprintStamina()
         {
-            var playerControllerType = Type.GetType("PlayerController, Assembly-CSharp");
             if (playerControllerType != null)
             {
                 var playerControllerInstance = GameHelper.FindObjectOfType(playerControllerType);
@@ -159,9 +161,10 @@ namespace dark_cheat
                 {
                     Debug.Log($"setting the stamina drain to 0f");
                     var energySprintDrainField = playerControllerType.GetField("EnergySprintDrain", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
+
                     if (energySprintDrainField != null)
                     {
-                        if (Hax2.unl_stamineState)
+                        if (Hax2.unl_sprint_stamineState)
                         {
                             var sprintSpeed = PlayerReflectionCache.PlayerControllerType.GetField("SprintSpeed", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
 
@@ -175,7 +178,7 @@ namespace dark_cheat
                                 }
                             }
                         }
-                        else if (!Hax2.unl_stamineState)
+                        else if (!Hax2.unl_sprint_stamineState)
                         {
                             energySprintDrainField.SetValue(playerControllerInstance, 10f);
                         }
@@ -193,6 +196,45 @@ namespace dark_cheat
             }
         }
 
+        public static void Always_Max_Stamina()
+        {
+            if (Hax2.alw_max_stamState && cts.IsCancellationRequested)
+            {
+                cts.Dispose();
+                cts = new CancellationTokenSource();
+
+                DLog.Log("Always_Max_Stamina Starting");
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Loop();
+                    }
+                    catch (Exception ex)
+                    {
+                        DLog.LogError("Always_Max_Stamina exception: " + ex);
+                    }
+                });
+            }
+            else if (!Hax2.alw_max_stamState && !cts.IsCancellationRequested)
+            {
+                cts.Cancel();
+            }
+        }
+        public async static Task Loop()
+        {
+            while (Hax2.unl_sprint_stamineState && !cts.IsCancellationRequested)
+            {
+                var EnergyStart = PlayerReflectionCache.PlayerControllerType.GetField("EnergyStart", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
+                var EnergyCurrent = PlayerReflectionCache.PlayerControllerType.GetField("EnergyCurrent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
+
+                if (EnergyStart != null && EnergyCurrent != null)
+                {
+                    EnergyCurrent.SetValue(playerControllerType, EnergyStart);
+                }
+                await Task.Delay(10);
+            }
+        }
         public static void DecreaseStaminaRechargeDelay(float delayMultiplier, float rateMultiplier = 1f)
         {
             if (PlayerReflectionCache.PlayerControllerInstance == null) // Ensure the PlayerController instance is cached.
@@ -532,7 +574,7 @@ namespace dark_cheat
             if (updateHealthMethod != null)
             {
                 // Set both current and max health to newMaxHealth.
-                updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { newMaxHealth, newMaxHealth, true });
+                updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { newMaxHealth, newMaxHealth, true, default(PhotonMessageInfo) });
                 DLog.Log($"Maximum health updated to {newMaxHealth} (current health set to {newMaxHealth}).");
             }
             else
@@ -618,7 +660,8 @@ namespace dark_cheat
             SetSprintSpeed(5);
             Strength.MaxStrength();
             MaxStamina();
-            UnlimitedStamina();
+            UnlimitedSprintStamina();
+            Always_Max_Stamina();
             ReapplyStaminaSettings();
             SetThrowStrength(Hax2.throwStrength);
             SetGrabRange(5);

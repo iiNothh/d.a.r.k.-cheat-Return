@@ -148,8 +148,11 @@ namespace dark_cheat
             Hax2.stamineState = ConfigManager.LoadToggle("inf_stam", false);
             if (Hax2.stamineState) PlayerController.MaxStamina();
 
-            Hax2.unl_stamineState = ConfigManager.LoadToggle("unl_stam", false);
-            if (Hax2.unl_stamineState) PlayerController.UnlimitedStamina();
+            Hax2.unl_sprint_stamineState = ConfigManager.LoadToggle("unl_sprint_stam", false);
+            if (Hax2.unl_sprint_stamineState) PlayerController.UnlimitedSprintStamina();
+
+            Hax2.alw_max_stamState = ConfigManager.LoadToggle("alw_max_stam", false);
+            if (Hax2.alw_max_stamState) PlayerController.Always_Max_Stamina();
 
             playerColor.isRandomizing = ConfigManager.LoadToggle("rgb_player", false);
             MiscFeatures.NoFogEnabled = ConfigManager.LoadToggle("No_Fog", false);
