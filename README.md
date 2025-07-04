@@ -16,6 +16,8 @@
 - Noclip
 - Infinite Health
 - Infinite Stamina
+- Unlimited Sprint Stamina
+- Always Max Stamina
 - Grab Guard
 - RGB Player
 - **No Weapon Recoil (Host only)**
@@ -26,9 +28,7 @@
   - Throw Strength
   - Speed
   - Grab Range
-  - Stamina Recharge Delay/Rate
-  - Unlimited Sprint Stamina
-  - Always Max Stamina (Experimental)
+  - Stamina Recharge Rate
   - Extra Jumps
   - Tumble Launch
   - Jump Force
