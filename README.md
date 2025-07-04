@@ -5,7 +5,6 @@
 
 ## FUNCTIONS
 
-## NOT WORKING FOR NEW ITEMS (I Think So) BECAUSE I DON'T HAVE IDEA
 ## Known Unworking Functions
 - Speed
 - No Weapon Recoil
