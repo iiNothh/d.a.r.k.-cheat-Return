@@ -456,10 +456,10 @@ namespace dark_cheat
                     UpdateItemList();
                     itemList = ItemTeleport.GetItemList();
                     nextUpdateTime = Time.time + updateInterval;
-                    PlayerController.MaxStamina();
                     PlayerController.UnlimitedSprintStamina();
                     PlayerController.Always_Max_Stamina();
-                    PlayerController.MaxHealth();
+                    PlayerController.MaxHealth(true);
+                    PlayerController.MaxStamina(true);
                 }
 
                 if (playerColor.isRandomizing)
@@ -922,7 +922,7 @@ namespace dark_cheat
             ToggleLogic("god_mode", " GOD MODE", ref godModeActive, PlayerController.GodMode);
             GUILayout.Space(5);
 
-            ToggleLogic("inf_health", " Infinite Health", ref infiniteHealthActive, PlayerController.MaxHealth);
+            ToggleLogic("inf_health", " Infinite Health", ref infiniteHealthActive, () => PlayerController.MaxHealth());
             GUILayout.Space(10);
 
             GUILayout.Label("MOVEMENT", sectionHeaderStyle);
@@ -930,7 +930,7 @@ namespace dark_cheat
             ToggleLogic("No_Clip", " NoClip", ref NoclipController.noclipActive, NoclipController.ToggleNoclip);
             GUILayout.Space(5);
 
-            ToggleLogic("inf_stam", " Infinite Stamina", ref stamineState, PlayerController.MaxStamina);
+            ToggleLogic("inf_stam", " Infinite Stamina", ref stamineState, () => PlayerController.MaxStamina());
             GUILayout.Space(5);
 
             ToggleLogic("unl_sprint_stam", " Unlimited Sprint Stamina", ref unl_sprint_stamineState, PlayerController.UnlimitedSprintStamina);

@@ -4,6 +4,7 @@ using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -93,7 +94,7 @@ namespace dark_cheat
             }
         }
 
-        public static void MaxHealth()
+        public static void MaxHealth(bool auto = false)
         {
             if (PlayerReflectionCache.PlayerHealthInstance == null) // Ensure the cache is populated.
             {
@@ -121,7 +122,7 @@ namespace dark_cheat
                     healthField.SetValue(playerHealth, 999999);
                     //updateHealthMethod.Invoke(PlayerReflectionCache.PlayerHealthInstance, new object[] { 999999, 100, true });
                 }
-                else
+                else if (!Hax2.infiniteHealthActive && !auto)
                 {
                     var statsManagerType = typeof(StatsManager);
                     var statsManagerInstance = GameHelper.FindObjectOfType(statsManagerType);
@@ -154,7 +155,7 @@ namespace dark_cheat
             }
         }
 
-        public static void MaxStamina()
+        public static void MaxStamina(bool auto = false)
         {
             if (PlayerReflectionCache.PlayerControllerInstance == null) // Ensure the cache is up-to-date.
             {
@@ -170,8 +171,16 @@ namespace dark_cheat
             if (PlayerReflectionCache.EnergyCurrentField != null) // Check for the cached EnergyCurrent field.
             {
                 int newStamina = Hax2.stamineState ? 999999 : 40;
-                PlayerReflectionCache.EnergyCurrentField.SetValue(PlayerReflectionCache.PlayerControllerInstance, newStamina);
-                DLog.Log("EnergyCurrent set to " + newStamina);
+                if (Hax2.stamineState)
+                {
+                    PlayerReflectionCache.EnergyCurrentField.SetValue(PlayerReflectionCache.PlayerControllerInstance, newStamina);
+                    DLog.Log("EnergyCurrent set to " + newStamina);
+                }
+                else if (!Hax2.stamineState && !auto)
+                {
+                    PlayerReflectionCache.EnergyCurrentField.SetValue(PlayerReflectionCache.PlayerControllerInstance, newStamina);
+                    DLog.Log("EnergyCurrent set to " + newStamina);
+                }
             }
             else
             {
@@ -226,22 +235,22 @@ namespace dark_cheat
 
         public static void Always_Max_Stamina()
         {
-            if (Hax2.alw_max_stamState && cts.IsCancellationRequested)
+            if (Hax2.alw_max_stamState)
             {
-                cts.Dispose();
-                cts = new CancellationTokenSource();
+                if (cts.IsCancellationRequested)
+                {
+                    cts.Dispose();
+                    cts = new CancellationTokenSource();
+                }
 
-                DLog.Log("Always_Max_Stamina Starting");
+                DLog.Log("Always_Max_Stamina_Loop Starting");
                 _ = Task.Run(async () =>
                 {
                     try
                     {
-                        await Loop();
+                        await Always_Max_Stamina_Loop();
                     }
-                    catch (Exception ex)
-                    {
-                        DLog.LogError("Always_Max_Stamina exception: " + ex);
-                    }
+                    catch {}
                 });
             }
             else if (!Hax2.alw_max_stamState && !cts.IsCancellationRequested)
@@ -249,20 +258,25 @@ namespace dark_cheat
                 cts.Cancel();
             }
         }
-        public async static Task Loop()
+        public async static Task Always_Max_Stamina_Loop()
         {
-            while (Hax2.unl_sprint_stamineState && !cts.IsCancellationRequested)
+            while (Hax2.alw_max_stamState && !cts.IsCancellationRequested)
             {
                 var EnergyStart = PlayerReflectionCache.PlayerControllerType.GetField("EnergyStart", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
                 var EnergyCurrent = PlayerReflectionCache.PlayerControllerType.GetField("EnergyCurrent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.Public);
 
                 if (EnergyStart != null && EnergyCurrent != null)
                 {
-                    EnergyCurrent.SetValue(playerControllerType, EnergyStart);
+                    var energyStartValue = EnergyStart.GetValue(playerControllerInstance);
+                    EnergyCurrent.SetValue(playerControllerInstance, energyStartValue);
+                }
+                else
+                {
                 }
                 await Task.Delay(10);
             }
         }
+
         public static void DecreaseStaminaRechargeDelay(float delayMultiplier, float rateMultiplier = 1f)
         {
             if (PlayerReflectionCache.PlayerControllerInstance == null) // Ensure the PlayerController instance is cached.
