@@ -10,7 +10,6 @@
 - Speed
 - No Weapon Recoil
 - No Weapon Cooldown
-- Always Max Stamina (Experimental)
 
 ### Self
 - God Mode
