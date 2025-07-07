@@ -182,6 +182,27 @@ namespace dark_cheat
         public static float OldthrowStrength = 0f;
         public static float OldslideDecay = 0f;
 
+        //Visibility
+        public static bool visibility_GrabStrength = false;
+        public static bool visibility_ThrowStrength = false;
+        public static bool visibility_Speed = false;
+        public static bool visibility_GrabRange = false;
+        public static bool visibility_ExtraJumps = false;
+        public static bool visibility_Tumble_Launch = false;
+
+        //old_Visibility
+        public static bool old_visibility_GrabStrength = false;
+        public static bool old_visibility_ThrowStrength = false;
+        public static bool old_visibility_Speed = false;
+        public static bool old_visibility_GrabRange = false;
+        public static bool old_visibility_ExtraJumps = false;
+        public static bool old_visibility_Tumble_Launch = false;
+
+
+        //Hst Only Try
+        public static bool HostOnly_Try_Tumble_Launch = false;
+        public static bool HostOnly_Try_Grab_Strength = false;
+
         private List<ItemTeleport.GameItem> itemList = new List<ItemTeleport.GameItem>();
         private int selectedItemIndex = 0;
         private Vector2 itemScrollPosition = Vector2.zero;
@@ -1009,9 +1030,26 @@ namespace dark_cheat
             GUILayout.Space(10);
 
             GUILayout.Label("PLAYER STATS", sectionHeaderStyle);
-            GUILayout.Label("Strength: " + Mathf.RoundToInt(sliderValueStrength), labelStyle);
+            GUILayout.Label("(HOST ONLY) Strength: " + Mathf.RoundToInt(sliderValueStrength), labelStyle);
             sliderValueStrength = GUILayout.HorizontalSlider(sliderValueStrength, 1f, 30f, GUILayout.Width(200));
-            if (sliderValueStrength != oldSliderValueStrength)
+            ToggleLogic("visibility_strength_id", "Strength Visibility", ref visibility_GrabStrength);
+            ToggleLogic("hostOnly_try_strength_id", "Strength Host Only Try", ref HostOnly_Try_Grab_Strength);
+            GUILayout.Space(5);
+
+            try
+            {
+                if (PhotonNetwork.IsMasterClient || HostOnly_Try_Grab_Strength)
+                {
+                    int newStrength = Mathf.RoundToInt(sliderValueStrength);
+                    string steamID = PlayerController.GetLocalPlayerSteamID();
+                    if (old_visibility_ExtraJumps != visibility_ExtraJumps)
+                    {
+                        setDictionaryStat(steamID, "Strenght", newStrength, "playerUpgradeStrength");
+                    }
+                }
+            }
+            catch { }
+            if (sliderValueStrength != oldSliderValueStrength && (PhotonNetwork.IsMasterClient || HostOnly_Try_Grab_Strength))
             {
                 int newStrength = Mathf.RoundToInt(sliderValueStrength);
                 string steamID = PlayerController.GetLocalPlayerSteamID();
@@ -1021,7 +1059,10 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    setUpgrade(steamID, "Grab Strength", "grabStrength", newStrength, "playerUpgradeStrength");
+                    if (PhotonNetwork.IsMasterClient)
+                    {
+                        setUpgrade(steamID, "Grab Strength", "grabStrength", newStrength, "playerUpgradeStrength", 1f, 0.2f, visibility_GrabStrength);
+                    }
                 }
                 else
                 {
@@ -1029,11 +1070,26 @@ namespace dark_cheat
                 }
 
                 oldSliderValueStrength = sliderValueStrength;
+                old_visibility_GrabStrength = visibility_GrabStrength;
+                
             }
 
             // Display label and slider
             GUILayout.Label("Throw Strength: " + Mathf.RoundToInt(throwStrength), labelStyle);
             throwStrength = GUILayout.HorizontalSlider(throwStrength, 0f, 30f, GUILayout.Width(200));
+            ToggleLogic("visibility_throwStrength_id", "Throw Strength Visibility", ref visibility_ThrowStrength);
+            GUILayout.Space(5);
+
+            try
+            {
+                int newThrowStrength = Mathf.RoundToInt(throwStrength);
+                string steamID = PlayerController.GetLocalPlayerSteamID();
+                if (old_visibility_ExtraJumps != visibility_ExtraJumps)
+                {
+                    setDictionaryStat(steamID, "Throw Strength", newThrowStrength, "playerUpgradeThrow", true);
+                }
+            }
+            catch { }
             if (throwStrength != OldthrowStrength)
             {
                 int newThrowStrength = Mathf.RoundToInt(throwStrength);
@@ -1044,7 +1100,7 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    setUpgrade(steamID, "Throw Strength", "throwStrength", newThrowStrength, "playerUpgradeThrow");
+                    setUpgrade(steamID, "Throw Strength", "throwStrength", newThrowStrength, "playerUpgradeThrow", 0f, 0.3f, visibility_ThrowStrength, true);
                 }
                 else
                 {
@@ -1052,10 +1108,24 @@ namespace dark_cheat
                 }
 
                 OldthrowStrength = throwStrength;
+                old_visibility_ThrowStrength = visibility_ThrowStrength;
             }
 
             GUILayout.Label("Speed: " + Mathf.RoundToInt(sliderValue), labelStyle);
             sliderValue = GUILayout.HorizontalSlider(sliderValue, 1f, 30f, GUILayout.Width(200));
+            ToggleLogic("visibility_speed_id", "Speed Visibility", ref visibility_Speed);
+            GUILayout.Space(5);
+
+            try
+            {
+                int newSpeed = Mathf.RoundToInt(sliderValue);
+                string steamID = PlayerController.GetLocalPlayerSteamID();
+                if (old_visibility_ExtraJumps != visibility_ExtraJumps)
+                {
+                    setDictionaryStat(steamID, "Speed", newSpeed, "playerUpgradeSpeed");
+                }
+            }
+            catch { }
             if (sliderValue != oldSliderValue)
             {
                 int newSpeed = Mathf.RoundToInt(sliderValue);
@@ -1066,7 +1136,11 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    //setUpgrade(steamID, "Sprint Speed", "throwStrength", throwStrength);
+                    PlayerController.SetSprintSpeed(5 + newSpeed);
+                    if (visibility_Speed)
+                    {
+                        setDictionaryStat(steamID, "Speed", newSpeed, "playerUpgradeSpeed");
+                    }
                 }
                 else
                 {
@@ -1074,10 +1148,24 @@ namespace dark_cheat
                 }
 
                 oldSliderValue = sliderValue;
+                old_visibility_Speed = visibility_Speed;
             }
 
             GUILayout.Label("Grab Range: " + Mathf.RoundToInt(grabRange), labelStyle);
             grabRange = GUILayout.HorizontalSlider(grabRange, 1f, 30f, GUILayout.Width(200));
+            ToggleLogic("visibility_grabRange_id", "Grab Range Visibility", ref visibility_GrabRange);
+            GUILayout.Space(5);
+
+            try
+            {
+                int newGrabRange = Mathf.RoundToInt(grabRange);
+                string steamID = PlayerController.GetLocalPlayerSteamID();
+                if (old_visibility_ExtraJumps != visibility_ExtraJumps)
+                {
+                    setDictionaryStat(steamID, "Grab Range", newGrabRange, "playerUpgradeRange");
+                }
+            }
+            catch { }
             if (grabRange != OldgrabRange)
             {
                 int newGrabRange = Mathf.RoundToInt(grabRange);
@@ -1088,7 +1176,7 @@ namespace dark_cheat
 
                 if (punManagerView != null)
                 {
-                    setUpgrade(steamID, "Grab Range", "grabRange", newGrabRange, "playerUpgradeRange");
+                    setUpgrade(steamID, "Grab Range", "grabRange", newGrabRange, "playerUpgradeRange", 4f, 1f, visibility_GrabRange);
                 }
                 else
                 {
@@ -1096,6 +1184,7 @@ namespace dark_cheat
                 }
 
                 OldgrabRange = grabRange;
+                old_visibility_GrabRange = visibility_GrabRange;
             }
 
             //GUILayout.Label("Stamina Recharge Delay: " + Mathf.RoundToInt(staminaRechargeDelay), labelStyle);
@@ -1118,6 +1207,19 @@ namespace dark_cheat
 
             GUILayout.Label("Extra Jumps: " + Mathf.RoundToInt(extraJumps), labelStyle);
             extraJumps = (int)GUILayout.HorizontalSlider(extraJumps, 0f, 30f, GUILayout.Width(200));
+            ToggleLogic("visibility_extraJumps_id", "Extra Jumps Visibility", ref visibility_ExtraJumps);
+            GUILayout.Space(5);
+
+            try
+            {
+                int newExtraJumps = Mathf.RoundToInt(extraJumps);
+                string steamID = PlayerController.GetLocalPlayerSteamID();
+                if (old_visibility_ExtraJumps != visibility_ExtraJumps)
+                {
+                    setDictionaryStat(steamID, "Extra Jump", newExtraJumps, "playerUpgradeExtraJump");
+                }
+            }
+            catch { }
             if (extraJumps != OldextraJumps)
             {
                 int newExtraJumps = Mathf.RoundToInt(extraJumps);
@@ -1134,7 +1236,10 @@ namespace dark_cheat
                     if (playerControllerInstance != null && jumpExtraField != null)
                     {
                         jumpExtraField.SetValue(playerControllerInstance, newExtraJumps);
-                        setDictionaryStat(steamID, "Extra Jump", newExtraJumps, "playerUpgradeExtraJump");
+                        if (visibility_ExtraJumps)
+                        {
+                            setDictionaryStat(steamID, "Extra Jump", newExtraJumps, "playerUpgradeExtraJump");
+                        }
                     }
                     else
                     {
@@ -1148,11 +1253,29 @@ namespace dark_cheat
                 }
 
                 OldextraJumps = extraJumps;
+                old_visibility_ExtraJumps = visibility_ExtraJumps;
             }
 
-            GUILayout.Label("Tumble Launch: " + Mathf.RoundToInt(tumbleLaunch), labelStyle);
+            GUILayout.Label("(HOST ONLY) Tumble Launch: " + Mathf.RoundToInt(tumbleLaunch), labelStyle);
             tumbleLaunch = (int)GUILayout.HorizontalSlider(tumbleLaunch, 0f, 20f, GUILayout.Width(200));
-            if (tumbleLaunch != OldtumbleLaunch)
+            ToggleLogic("visibility_tumbleLaunch_id", "Tumble Launch Visibility", ref visibility_Tumble_Launch);
+            ToggleLogic("hostOnly_try_tumbleLaunch_id", "Tumble Launch Host Only Try", ref HostOnly_Try_Tumble_Launch);
+            GUILayout.Space(5);
+
+            try
+            {
+                if (PhotonNetwork.IsMasterClient || HostOnly_Try_Tumble_Launch)
+                {
+                    int newtumbleLaunch = Mathf.RoundToInt(tumbleLaunch);
+                    string steamID = PlayerController.GetLocalPlayerSteamID();
+                    if (old_visibility_Tumble_Launch != visibility_Tumble_Launch)
+                    {
+                        setDictionaryStat(steamID, "Tumble Launch", newtumbleLaunch, "playerUpgradeLaunch");
+                    }
+                }
+            }
+            catch { }
+            if (tumbleLaunch != OldtumbleLaunch && (PhotonNetwork.IsMasterClient || HostOnly_Try_Tumble_Launch))
             {
                 int newtumbleLaunch = Mathf.RoundToInt(tumbleLaunch);
                 string steamID = PlayerController.GetLocalPlayerSteamID();
@@ -1173,6 +1296,10 @@ namespace dark_cheat
                         if (tumbleLaunchField != null)
                         {
                             tumbleLaunchField.SetValue(tumbleInstance, newtumbleLaunch);
+                            if (visibility_Tumble_Launch)
+                            {
+                                setDictionaryStat(steamID, "Tumble Launch", newtumbleLaunch, "playerUpgradeLaunch");
+                            }
                         }
                         else
                         {
@@ -1191,6 +1318,7 @@ namespace dark_cheat
                 }
 
                 OldtumbleLaunch = tumbleLaunch;
+                old_visibility_Tumble_Launch = visibility_Tumble_Launch;
             }
 
             GUILayout.Label("Jump Force: " + Mathf.RoundToInt(jumpForce), labelStyle);
@@ -2868,7 +2996,7 @@ namespace dark_cheat
             }
         }
 
-        private void setUpgrade(string steamID, string upgradeName, string physGrabberUpgradeName, int newValue, string upgradeUpgradeName)
+        private void setUpgrade(string steamID, string upgradeName, string physGrabberUpgradeName, int newValue, string upgradeUpgradeName, Single baseValue, Single incrementValue, bool isVisibility, bool isThrowUpgrade = false)
         {
             FieldInfo playerUpgradeFieldInfo = typeof(StatsManager).GetField(upgradeUpgradeName, BindingFlags.Public | BindingFlags.Instance);
             if (playerUpgradeFieldInfo != null)
@@ -2888,9 +3016,20 @@ namespace dark_cheat
                                 FieldInfo field = grabberType.GetField(physGrabberUpgradeName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
                                 if (field != null)
                                 {
-                                    dict[steamID] = newValue;
-                                    field.SetValue(playerAvatar.physGrabber, newValue);
-                                    DLog.LogWarning($"{upgradeName} Updated To {newValue}");
+                                    Single value = baseValue + (incrementValue * Convert.ToSingle(newValue));
+                                    if (isVisibility)
+                                    {
+                                        if (isThrowUpgrade)
+                                        {
+                                            dict[steamID] = newValue;
+                                        }
+                                        else
+                                        {
+                                            dict[steamID] = newValue - 1;
+                                        }
+                                    }
+                                    field.SetValue(playerAvatar.physGrabber, value);
+                                    DLog.LogWarning($"{upgradeName} Updated To {value}");
                                 }
                             }
                         }
@@ -2899,9 +3038,18 @@ namespace dark_cheat
                             PlayerAvatar playerAvatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
                             if (playerAvatar != null)
                             {
-                                playerAvatar.physGrabber.grabStrength = newValue;
-                                dict.Add(steamID, newValue);
-                                DLog.LogWarning($"{upgradeName} Updated To {newValue} With Add steamID");
+                                Type grabberType = playerAvatar.physGrabber.GetType();
+                                FieldInfo field = grabberType.GetField(physGrabberUpgradeName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+                                if (field != null)
+                                {
+                                    Single value = baseValue + (incrementValue * Convert.ToSingle(newValue));
+                                    field.SetValue(playerAvatar.physGrabber, value);
+                                    if (isVisibility)
+                                    {
+                                        dict.Add(steamID, newValue - 1);
+                                    }
+                                    DLog.LogWarning($"{upgradeName} Updated To {value} With Add steamID");
+                                }
                             }
                         }
                     }
@@ -2913,7 +3061,7 @@ namespace dark_cheat
                 DLog.LogWarning($"{upgradeName} playerUpgradeFieldInfo is Null");
             }
         }
-        private void setDictionaryStat(string steamID, string upgradeName, int newValue, string upgradeUpgradeName)
+        private void setDictionaryStat(string steamID, string upgradeName, int newValue, string upgradeUpgradeName, bool IsThrowUpgrade = false)
         {
             FieldInfo playerUpgradeFieldInfo = typeof(StatsManager).GetField(upgradeUpgradeName, BindingFlags.Public | BindingFlags.Instance);
             if (playerUpgradeFieldInfo != null)
@@ -2926,16 +3074,32 @@ namespace dark_cheat
                     {
                         if (dict.ContainsKey(steamID))
                         {
-                            dict[steamID] = newValue;
-                            DLog.LogWarning($"{upgradeName} Updated To {newValue} Stats");
+                            if (IsThrowUpgrade)
+                            {
+                                dict[steamID] = newValue;
+                                DLog.LogWarning($"{upgradeName} Updated To {newValue} Stats");
+                            }
+                            else
+                            {
+                                dict[steamID] = newValue - 1;
+                                DLog.LogWarning($"{upgradeName} Updated To {newValue - 1} Stats");
+                            }
                         }
                         else
                         {
                             PlayerAvatar playerAvatar = SemiFunc.PlayerAvatarGetFromSteamID(steamID);
                             if (playerAvatar != null)
                             {
-                                dict.Add(steamID, newValue);
-                                DLog.LogWarning($"{upgradeName} Updated To {newValue} Stats With Add steamID");
+                                if (IsThrowUpgrade)
+                                {
+                                    dict.Add(steamID, newValue);
+                                    DLog.LogWarning($"{upgradeName} Updated To {newValue} Stats With Add steamID");
+                                }
+                                else
+                                {
+                                    dict.Add(steamID, newValue - 1);
+                                }
+                                    DLog.LogWarning($"{upgradeName} Updated To {newValue - 1} Stats With Add steamID");
                             }
                         }
                     }

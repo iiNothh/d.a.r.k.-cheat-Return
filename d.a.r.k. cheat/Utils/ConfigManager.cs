@@ -67,11 +67,25 @@ namespace dark_cheat
             ConfigManager.SaveToggle("inf_health", Hax2.infiniteHealthActive);
             ConfigManager.SaveToggle("No_Clip", NoclipController.noclipActive);
             ConfigManager.SaveToggle("inf_stam", Hax2.stamineState);
+            ConfigManager.SaveToggle("unl_sprint_stam", Hax2.unl_sprint_stamineState);
+            ConfigManager.SaveToggle("alw_max_stam", Hax2.alw_max_stamState);
             ConfigManager.SaveToggle("rgb_player", playerColor.isRandomizing);
             ConfigManager.SaveToggle("No_Fog", MiscFeatures.NoFogEnabled);
             ConfigManager.SaveToggle("WaterMark_Toggle", Hax2.showWatermark);
             ConfigManager.SaveToggle("no_weapon_recoil", Patches.NoWeaponRecoil._isEnabledForConfig);
             ConfigManager.SaveToggle("no_weapon_cooldown", NoWeaponCooldownEnabled);
+
+            //Self Visuals
+            ConfigManager.SaveToggle("visibility_strength_id", Hax2.visibility_GrabStrength);
+            ConfigManager.SaveToggle("visibility_throwStrength_id", Hax2.visibility_ThrowStrength);
+            ConfigManager.SaveToggle("visibility_speed_id", Hax2.visibility_Speed);
+            ConfigManager.SaveToggle("visibility_grabRange_id", Hax2.visibility_GrabRange);
+            ConfigManager.SaveToggle("visibility_extraJumps_id", Hax2.visibility_ExtraJumps);
+            ConfigManager.SaveToggle("visibility_tumbleLaunch_id", Hax2.visibility_Tumble_Launch);
+
+            //Self Host Only Try
+            ConfigManager.SaveToggle("hostOnly_try_strength_id", Hax2.HostOnly_Try_Tumble_Launch);
+            ConfigManager.SaveToggle("hostOnly_try_tumbleLaunch_id", Hax2.HostOnly_Try_Grab_Strength);
 
             //Sliders
             ConfigManager.SaveFloat("strength", Hax2.sliderValueStrength);
@@ -177,6 +191,18 @@ namespace dark_cheat
             Hax2.fieldOfView = ConfigManager.LoadFloat("field_of_view", Hax2.fieldOfView);
             DebugCheats.maxItemEspDistance = ConfigManager.LoadFloat("max_item_distance", DebugCheats.maxItemEspDistance);
             DebugCheats.minItemValue = ConfigManager.LoadInt("min_item_value", DebugCheats.minItemValue);
+
+            //Self Visuals
+            Hax2.visibility_GrabStrength = ConfigManager.LoadToggle("visibility_strength_id", false);
+            Hax2.visibility_ThrowStrength = ConfigManager.LoadToggle("visibility_throwStrength_id", false);
+            Hax2.visibility_Speed = ConfigManager.LoadToggle("visibility_speed_id", false);
+            Hax2.visibility_GrabRange = ConfigManager.LoadToggle("visibility_grabRange_id", false);
+            Hax2.visibility_ExtraJumps = ConfigManager.LoadToggle("visibility_extraJumps_id", false);
+            Hax2.visibility_Tumble_Launch = ConfigManager.LoadToggle("visibility_tumbleLaunch_id", false);
+  
+            //Self Host Only Try
+            Hax2.HostOnly_Try_Tumble_Launch = ConfigManager.LoadToggle("hostOnly_try_strength_id", false);
+            Hax2.HostOnly_Try_Grab_Strength = ConfigManager.LoadToggle("hostOnly_try_tumbleLaunch_id", false);
 
             // Visuals Tab
             DebugCheats.drawEspBool = ConfigManager.LoadToggle("drawEspBool", false);
