@@ -6,7 +6,6 @@
 ## FUNCTIONS
 
 ## Known Unworking Functions
-- Speed
 - No Weapon Recoil
 - No Weapon Cooldown
 
