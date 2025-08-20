@@ -2060,9 +2060,9 @@ namespace dark_cheat
             int displayValue = (int)Mathf.Pow(10, itemValueSliderPos);
             GUILayout.Label($"${displayValue:N0}", labelStyle);
             itemValueSliderPos = GUILayout.HorizontalSlider(itemValueSliderPos, 3f, 9f);
-            if (GUILayout.Button("Apply Value Change", buttonStyle))
+            if (GUILayout.Button("[Host Only] Apply Value Change", buttonStyle))
             {
-                if (selectedItemIndex >= 0 && selectedItemIndex < sortedItems.Count)
+                if (selectedItemIndex >= 0 && selectedItemIndex < sortedItems.Count && PhotonNetwork.IsMasterClient)
                 {
                     var selectedItem = sortedItems[selectedItemIndex];
                     ItemTeleport.SetItemValue(selectedItem, displayValue);

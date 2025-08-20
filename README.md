@@ -1,7 +1,17 @@
 # beta-d.a.r.k.-cheat | [Discord](https://discord.gg/RAR8D26P4s)
-# [Injector](https://github.com/wh0am15533/SharpMonoInjector) | [Injector UnknownCheats Page](https://www.unknowncheats.me/forum/unity/408878-sharpmonoinjector-fixed-updated.html)
+<div align="center">
 
-<sub>*Forked by [iiNothh](https://github.com/iiNothh) | **v1.3***</sub>
+# **Injector Released**
+# [Injector Github Page](https://github.com/iiNothh/ModernStealthLauncher-Return) 
+# [Download Latest Injector Release](https://github.com/iiNothh/ModernStealthLauncher-Return/releases/latest/download/Injector.GUI.exe)
+
+</div>
+
+<sub>
+
+*Forked by [iiNothh](https://github.com/iiNothh) | **v1.3***
+
+</sub>
 
 ## FUNCTIONS
 
